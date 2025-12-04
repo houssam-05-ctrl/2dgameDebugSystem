@@ -21,7 +21,7 @@ class PixelAdventure extends FlameGame {
       width: 640,
       height: 360,
     );
-    cam.viewfinder.anchor = Anchor.center;
+    cam.viewfinder.anchor = Anchor.topLeft;
 
     addAll([cam, world]); // adding the level to the game
     return super.onLoad();
