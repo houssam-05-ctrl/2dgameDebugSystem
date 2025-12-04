@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
+import 'package:pixel_adventure/actors/player.dart';
 
 class Level extends World {
   // create first components of the level here
@@ -14,6 +15,7 @@ class Level extends World {
       Vector2.all(16),
     ); // creating without adding the level 1)
     add(level); // adding the level to the world 2)
+    add(Player()); // added the player to the level 3)
     return super.onLoad();
   }
 }
