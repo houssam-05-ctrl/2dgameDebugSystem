@@ -8,7 +8,7 @@ import 'package:pixel_adventure/actors/player.dart';
 
 class PixelAdventure extends FlameGame {
   @override
-  Color backgroundColor() => const Color(0xFF211F30); // sky blue color
+  Color backgroundColor() => const Color(0xFF211F30);
   late final CameraComponent cam;
   @override
   final world = Level();
