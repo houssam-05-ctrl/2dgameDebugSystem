@@ -10,8 +10,8 @@ class Player
     with
         HasGameReference<PixelAdventure> {
   // 3. Moved character to a parameter in the constructor
-  final String character;
-  Player({required this.character});
+  String character;
+  Player({super.position, required this.character});
   // Maintained variables
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation runAnimation;
@@ -30,7 +30,7 @@ class Player
 
   // Maintained function name and logic, but made it asynchronous
   Future<void> _loadAllAnimations() async {
-    idleAnimation = _idleAnimation('Idle', 11);
+    idleAnimation = _spriteAnimation('Idle', 11);
     runAnimation = _spriteAnimation('Run', 12);
 
     // liste de toutes les animations
@@ -42,19 +42,6 @@ class Player
 
 // set our current state of the player
   PlayerState currentState = PlayerState.running;
-
-  SpriteAnimation _idleAnimation(String state, int amount) {
-    return SpriteAnimation.fromFrameData(
-      game.images.fromCache(
-        'Main Characters/$character/$state (32x32).png',
-      ), // Use the loaded image
-      SpriteAnimationData.sequenced(
-        amount: amount,
-        stepTime: stepTime,
-        textureSize: Vector2.all(32),
-      ),
-    );
-  }
 
   SpriteAnimation _spriteAnimation(String state, int amount) {
     return SpriteAnimation.fromFrameData(
