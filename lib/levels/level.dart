@@ -7,6 +7,7 @@ import 'package:pixel_adventure/actors/player.dart';
 class Level extends World {
   // create first components of the level here
   late TiledComponent level;
+  final Player player = Player(character: 'Ninja Frog');
 
   @override
   FutureOr<void> onLoad() async {
@@ -15,7 +16,7 @@ class Level extends World {
       Vector2.all(16),
     ); // creating without adding the level 1)
     add(level); // adding the level to the world 2)
-    add(Player()); // added the player to the level 3)
+    add(player); // added the player to the level 3)
     return super.onLoad();
   }
 }

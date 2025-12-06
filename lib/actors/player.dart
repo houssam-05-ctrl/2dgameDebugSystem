@@ -1,31 +1,29 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
-import 'package:flame/flame.dart'; // Needed for Flame.images.load
 import 'package:pixel_adventure/pixel_adventure.dart';
 
 enum PlayerState { idle, running }
 
 class Player
-    extends
-        SpriteAnimationGroupComponent<PlayerState> // 1. Added Generic Type
-    with HasGameReference<PixelAdventure> {
+    extends SpriteAnimationGroupComponent<PlayerState> // 1. Added Generic Type
+    with
+        HasGameReference<PixelAdventure> {
+  // 3. Moved character to a parameter in the constructor
+  final String character;
+  Player({required this.character});
   // Maintained variables
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation runAnimation;
   final double stepTime = 0.05;
 
-  // 2. Set initial state in the constructor
-  Player() : super(current: PlayerState.idle);
-
   @override
   FutureOr<void> onLoad() async {
-    // 3. Added 'async'
-    // Load animations and assign them to the maintained fields
     await _loadAllAnimations();
 
-    // Set the component size (Essential for rendering)
+    // to set the component size
     size = Vector2.all(32);
+    position = Vector2(32, 32);
 
     return super.onLoad();
   }
@@ -33,9 +31,10 @@ class Player
   // Maintained function name and logic, but made it asynchronous
   Future<void> _loadAllAnimations() async {
     // 4. Use await Flame.images.load for safe asynchronous asset loading
-    final idleSpriteSheet = await Flame.images.load(
-      'Main characters/Ninja Frog/Idle (32x32).png',
+    final idleSpriteSheet = game.images.fromCache(
+      'Main Characters/$character/Idle (32x32).png',
     );
+    runAnimation = _spriteAnimation();
 
     idleAnimation = SpriteAnimation.fromFrameData(
       idleSpriteSheet, // Use the loaded image
@@ -45,11 +44,26 @@ class Player
         textureSize: Vector2.all(32),
       ),
     );
+    // liste de toutes les animations
+    animations = {
+      PlayerState.idle: idleAnimation,
+      PlayerState.running: runAnimation
+    };
+  }
 
-    // list of animations - maintained the original logic
-    animations = {PlayerState.idle: idleAnimation};
-    current = PlayerState.idle;
-    // The current animation is already set in the constructor (PlayerState.idle)
-    // No need to set it again here.
+// set our current state of the player
+  PlayerState currentState = PlayerState.running;
+
+  SpriteAnimation _spriteAnimation() {
+    return SpriteAnimation.fromFrameData(
+      game.images.fromCache(
+        'Main Characters/$character/Run (32x32).png',
+      ), // Use the loaded image
+      SpriteAnimationData.sequenced(
+        amount: 12,
+        stepTime: stepTime,
+        textureSize: Vector2.all(32),
+      ),
+    );
   }
 }
