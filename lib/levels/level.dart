@@ -7,10 +7,10 @@ import 'package:pixel_adventure/actors/player.dart';
 
 class Level extends World {
   final String levelName;
-  Level({required this.levelName});
+  final Player player;
+  Level({required this.levelName, required this.player});
 
   late TiledComponent level;
-  Player? player;
 
   @override
   FutureOr<void> onLoad() async {
@@ -55,11 +55,8 @@ class Level extends World {
         if (spawnpoint.class_ == 'Player' ||
             spawnpoint.name == 'Player' ||
             spawnpoint.type == 'Player') {
-          final player = Player(
-              character: 'Mask Dude',
-              position: Vector2(spawnpoint.x, spawnpoint.y));
+          player.position = Vector2(spawnpoint.x, spawnpoint.y);
           add(player);
-          this.player = player;
           playerAdded = true;
 
           if (kDebugMode) {
@@ -97,9 +94,8 @@ class Level extends World {
   }
 
   void addDefaultPlayer() {
-    final player = Player(character: 'Mask Dude', position: Vector2(100, 100));
+    player.position = Vector2(100, 100);
     add(player);
-    this.player = player;
 
     if (kDebugMode) {
       print('Player added at default position (100, 100)');
