@@ -2,44 +2,107 @@ import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pixel_adventure/actors/player.dart';
 
 class Level extends World {
-  // create first components of the level here
+  final String levelName;
+  Level({required this.levelName});
+
   late TiledComponent level;
+  Player? player;
+
   @override
   FutureOr<void> onLoad() async {
     level = await TiledComponent.load(
-      'Level-01.tmx',
+      '$levelName.tmx',
       Vector2.all(16),
-    ); // creating without adding the level 1)
+    );
 
-    add(level); // adding the level to the world 2)
+    if (kDebugMode) {
+      print('=== DEBUG: Layers in $levelName.tmx ===');
+      for (final layer in level.tileMap.map.layers) {
+        print('  ${layer.name} (${layer.runtimeType})');
+      }
+      print('====================================');
+    }
 
-    final spawnPointsLayer = level.tileMap.getLayer<ObjectGroup>('Spawnpoints');
-    for (final spawnPoint in spawnPointsLayer!.objects) {
-      switch (spawnPoint.class_) {
-        case 'Player':
+    add(level);
+
+    // Try to get the Spawnpoint layer
+    final spawnPointLayer = level.tileMap.getLayer<ObjectGroup>('Spawnpoint');
+
+    if (spawnPointLayer != null) {
+      if (kDebugMode) {
+        print(
+            'Found Spawnpoint layer with ${spawnPointLayer.objects.length} objects');
+        for (final obj in spawnPointLayer.objects) {
+          print(
+              '  Object: name="${obj.name}", class="${obj.class_}", type="${obj.type}", '
+              'position=(${obj.x}, ${obj.y}), size=(${obj.width}×${obj.height})');
+        }
+      }
+
+      // Look for the Player object
+      bool playerAdded = false;
+      for (final spawnpoint in spawnPointLayer.objects) {
+        if (kDebugMode) {
+          print(
+              'Checking object: ${spawnpoint.name} with class: ${spawnpoint.class_}');
+        }
+
+        // Check multiple possible properties where the class might be stored
+        if (spawnpoint.class_ == 'Player' ||
+            spawnpoint.name == 'Player' ||
+            spawnpoint.type == 'Player') {
           final player = Player(
               character: 'Mask Dude',
-              position: Vector2(spawnPoint.x, spawnPoint.y));
+              position: Vector2(spawnpoint.x, spawnpoint.y));
           add(player);
-          break;
-        default:
+          this.player = player;
+          playerAdded = true;
+
+          if (kDebugMode) {
+            print(
+                'Player added at position (${spawnpoint.x}, ${spawnpoint.y})');
+          }
+          break; // Found player, break out of loop
+        }
       }
+
+      if (!playerAdded) {
+        if (kDebugMode) {
+          print('Warning: No Player object found in Spawnpoint layer');
+          print('Available objects in Spawnpoint layer:');
+          for (final obj in spawnPointLayer.objects) {
+            print(
+                '  - Name: "${obj.name}", Class: "${obj.class_}", Type: "${obj.type}"');
+          }
+        }
+        // Add player at default position
+        addDefaultPlayer();
+      }
+    } else {
+      if (kDebugMode) {
+        print('Warning: Spawnpoint layer not found. Available layers:');
+        for (final layer in level.tileMap.map.layers) {
+          print('  - ${layer.name} (${layer.runtimeType})');
+        }
+      }
+      // Add player at default position
+      addDefaultPlayer();
     }
+
     return super.onLoad();
   }
-}
 
-/*
- final spawnPoint = level.tileMap
-        .getLayer<ObjectGroup>(
-            'Spawn Points')! // we need to specify the layer type
-        .objects // to loop thru the objects and find the one we want
-        .firstWhere((element) => element.name == 'Player Spawn');
-    player.position = Vector2(spawnPoint.x, spawnPoint.y);
+  void addDefaultPlayer() {
+    final player = Player(character: 'Mask Dude', position: Vector2(100, 100));
     add(player);
+    this.player = player;
 
-    thats also a good way to do add a player in spwn place but the problenm is the scale if we have multiple spawn points.
-    */
+    if (kDebugMode) {
+      print('Player added at default position (100, 100)');
+    }
+  }
+}
