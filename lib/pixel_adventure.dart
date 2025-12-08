@@ -4,8 +4,8 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
-import 'package:pixel_adventure/actors/player.dart';
-import 'package:pixel_adventure/levels/level.dart';
+import 'package:pixel_adventure/components/player.dart';
+import 'package:pixel_adventure/components/level.dart';
 
 class PixelAdventure extends FlameGame
     with HasKeyboardHandlerComponents, HasCollisionDetection {
@@ -20,11 +20,10 @@ class PixelAdventure extends FlameGame
   FutureOr<void> onLoad() async {
     await images.loadAllImages();
     final world = Level(
-      levelName: 'Level-02',
+      levelName: 'Level-01',
       player: player,
     );
     await world.onLoad();
-
     cam = CameraComponent.withFixedResolution(
       world: world,
       width: 640,
@@ -58,10 +57,10 @@ class PixelAdventure extends FlameGame
   void updateJoystick() {
     switch (joystick.direction) {
       case JoystickDirection.left:
-        player.direction = PlayerDirection.left;
+        player.horizontalMovement = -1;
         break;
       case JoystickDirection.right:
-        player.direction = PlayerDirection.right;
+        player.horizontalMovement = 1;
         break;
       case JoystickDirection.up:
       case JoystickDirection.down:
@@ -70,13 +69,19 @@ class PixelAdventure extends FlameGame
       case JoystickDirection.downLeft:
       case JoystickDirection.downRight:
       case JoystickDirection.idle:
-        player.direction = PlayerDirection.none;
+        player.horizontalMovement = 0;
         break;
     }
   }
 }
+
 /*
+
 // Color constants with proper opacity
+si on veut ajouter un joystick plus stylé avec effet 3d mais no need ...
+
+
+
   static const _joystickKnobColorLight = Color(0xFF4FC3F7);
   static const _joystickKnobColorDark = Color(0xFF0277BD);
   static const _joystickBgColorInner = Color(0xCC5D7B8C); // 80% opacity

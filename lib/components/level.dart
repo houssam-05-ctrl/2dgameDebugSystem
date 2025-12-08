@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:flutter/foundation.dart';
-import 'package:pixel_adventure/actors/player.dart';
+import 'package:pixel_adventure/components/collision_block.dart';
+import 'package:pixel_adventure/components/player.dart';
 
 class Level extends World {
   final String levelName;
@@ -11,6 +12,7 @@ class Level extends World {
   Level({required this.levelName, required this.player});
 
   late TiledComponent level;
+  List<CollisionBlock> collisionsBlocks = [];
 
   @override
   FutureOr<void> onLoad() async {
@@ -66,6 +68,33 @@ class Level extends World {
           break; // Found player, break out of loop
         }
       }
+
+      final collisionsLayer = level.tileMap.getLayer<ObjectGroup>('Collisions');
+
+      if (collisionsLayer != null) {
+        for (final collision in collisionsLayer.objects) {
+          // we gonna check for the collisions layer in the objects and see fi there is any for our game
+          switch (collision.class_) {
+            case 'Platform':
+              final platform = CollisionBlock(
+                position: Vector2(collision.x, collision.y),
+                size: Vector2(collision.width, collision.height),
+                isPlatform: true,
+              );
+              collisionsBlocks.add(platform); // add finally to teh list
+              add(platform); // daba kaybano( because its a flame feature to add using this fucntion)
+              break;
+            default:
+              final block = CollisionBlock(
+                position: Vector2(collision.x, collision.y),
+                size: Vector2(collision.width, collision.height),
+              );
+              collisionsBlocks.add(block);
+              add(block);
+          }
+        }
+      }
+      player.collisionsBlocks = collisionsBlocks;
 
       if (!playerAdded) {
         if (kDebugMode) {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="23" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="6">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="23" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="45">
  <tileset firstgid="1" source="Pixel Adventure.tsx"/>
  <layer id="1" name="Tile Layer 1" width="40" height="23">
   <data encoding="csv">
@@ -13,10 +13,10 @@
 24,24,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,111,24,24,24,
 24,24,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,111,24,24,24,
 24,24,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,111,24,24,24,
-24,24,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,111,24,24,24,
-24,24,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,111,24,24,24,
-24,24,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,111,24,24,24,
-24,24,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,111,24,24,24,
+24,24,111,62,63,64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,111,24,24,24,
+24,24,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,41,42,0,0,0,0,0,0,0,0,0,0,0,111,24,24,24,
+24,24,111,62,63,64,0,0,0,0,84,0,0,0,0,0,0,40,41,42,0,0,0,0,0,0,0,0,62,63,64,0,0,0,0,0,111,24,24,24,
+24,24,111,0,0,0,0,0,0,0,0,0,40,41,42,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,111,24,24,24,
 24,24,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35,111,24,24,24,
 24,24,111,35,0,35,0,0,0,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35,0,35,0,35,0,35,111,24,24,24,
 24,24,111,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,8,9,7,8,9,7,8,9,111,24,24,24,
@@ -28,7 +28,35 @@
 24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24
 </data>
  </layer>
+ <objectgroup id="4" name="Collisions">
+  <object id="13" name="Collisions" x="32" y="80" width="560" height="16"/>
+  <object id="14" name="Collisions" x="576" y="96" width="16" height="224"/>
+  <object id="15" name="Collisions" x="32" y="288" width="560" height="16"/>
+  <object id="16" name="Collisions" x="32" y="96" width="16" height="208"/>
+  <object id="17" name="Collisions" x="48" y="256" width="112" height="48"/>
+  <object id="19" x="192" y="208" width="48"/>
+  <object id="20" name="Collisions" x="272" y="192" width="48" height="16"/>
+  <object id="21" x="352" y="176" width="48"/>
+  <object id="22" name="Collisions" x="432" y="256" width="144" height="48"/>
+  <object id="23" name="Collisions" x="560" y="224" width="16" height="32"/>
+  <object id="24" x="464" y="240" width="16" height="16"/>
+  <object id="25" x="496" y="240" width="16" height="16"/>
+  <object id="27" name="Collisions" x="464" y="240" width="16" height="16"/>
+  <object id="28" x="496" y="240" width="16" height="16"/>
+  <object id="29" name="Collisions" x="528" y="240" width="16" height="16"/>
+  <object id="30" type="Platform" x="48" y="160" width="48" height="16"/>
+  <object id="31" type="Platform" x="48" y="192" width="48" height="16"/>
+  <object id="32" type="Platform" x="448" y="192" width="48" height="16"/>
+  <object id="34" type="Platform" x="48" y="160" width="48" height="16"/>
+  <object id="36" name="Collisions" x="192" y="208" width="48" height="16"/>
+  <object id="37" name="Collisions" x="352" y="176" width="48" height="16"/>
+  <object id="38" name="Collisions" x="48" y="240" width="16" height="16"/>
+  <object id="39" x="80" y="240" width="16" height="16"/>
+  <object id="40" x="144" y="240" width="16" height="16"/>
+  <object id="42" name="Collisions" x="80" y="240" width="16" height="16"/>
+  <object id="44" name="Collision" x="144" y="240" width="16" height="16"/>
+ </objectgroup>
  <objectgroup id="2" name="Spawnpoint">
-  <object id="5" name="Player" type="Player" x="110.582" y="229.346" width="26.785" height="25.1109"/>
+  <object id="5" name="Player" type="Player" x="294.622" y="262.183" width="26.785" height="25.1109"/>
  </objectgroup>
 </map>
