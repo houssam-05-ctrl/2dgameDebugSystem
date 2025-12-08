@@ -7,17 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:pixel_adventure/actors/player.dart';
 import 'package:pixel_adventure/levels/level.dart';
 
-class PixelAdventure extends FlameGame with HasKeyboardHandlerComponents {
+class PixelAdventure extends FlameGame
+    with HasKeyboardHandlerComponents, HasCollisionDetection {
   @override
   Color backgroundColor() => const Color(0xFF211F30);
   late final CameraComponent cam;
+  late final Player player = Player(character: 'Mask Dude');
+  late JoystickComponent joystick;
+  bool showJoystick = true;
 
   @override
   FutureOr<void> onLoad() async {
     await images.loadAllImages();
     final world = Level(
       levelName: 'Level-02',
-      player: Player(character: 'Mask Dude'),
+      player: player,
     );
     await world.onLoad();
 
@@ -28,5 +32,109 @@ class PixelAdventure extends FlameGame with HasKeyboardHandlerComponents {
     );
     cam.viewfinder.anchor = Anchor.topLeft;
     addAll([cam, world]); // adding the level to the game
+    if (showJoystick) {
+      addJoystick();
+    }
+  }
+
+  @override
+  void update(double dt) {
+    if (showJoystick) {
+      updateJoystick();
+    }
+    super.update(dt);
+  }
+
+  void addJoystick() {
+    joystick = JoystickComponent(
+      knob: CircleComponent(radius: 20, paint: Paint()..color = Colors.blue),
+      background:
+          CircleComponent(radius: 50, paint: Paint()..color = Colors.blueGrey),
+      margin: const EdgeInsets.only(left: 40, bottom: 40),
+    );
+    add(joystick);
+  }
+
+  void updateJoystick() {
+    switch (joystick.direction) {
+      case JoystickDirection.left:
+        player.direction = PlayerDirection.left;
+        break;
+      case JoystickDirection.right:
+        player.direction = PlayerDirection.right;
+        break;
+      case JoystickDirection.up:
+      case JoystickDirection.down:
+      case JoystickDirection.upLeft:
+      case JoystickDirection.upRight:
+      case JoystickDirection.downLeft:
+      case JoystickDirection.downRight:
+      case JoystickDirection.idle:
+        player.direction = PlayerDirection.none;
+        break;
+    }
   }
 }
+/*
+// Color constants with proper opacity
+  static const _joystickKnobColorLight = Color(0xFF4FC3F7);
+  static const _joystickKnobColorDark = Color(0xFF0277BD);
+  static const _joystickBgColorInner = Color(0xCC5D7B8C); // 80% opacity
+  static const _joystickBgColorOuter = Color(0x665D7B8C); // 40% opacity
+
+  static const _joystickKnobRadius = 20.0;
+  static const _joystickBackgroundRadius = 50.0;
+  static const _joystickMargin = EdgeInsets.only(left: 40, bottom: 40);
+  static const _joystickDeadzone = 0.1;
+
+  void addJoystick() {
+    joystick = JoystickComponent(
+      knob: CircleComponent(
+          radius: _joystickKnobRadius, paint: _createKnobPaint()),
+      background: CircleComponent(
+          radius: _joystickBackgroundRadius, paint: _createBackgroundPaint()),
+      margin: _joystickMargin,
+      priority: 2,
+    );
+
+    add(joystick);
+  }
+
+  Paint _createKnobPaint() {
+    return Paint()
+      ..shader = const RadialGradient(
+        colors: [_joystickKnobColorLight, _joystickKnobColorDark],
+        stops: [0.0, 1.0],
+      ).createShader(Rect.fromCircle(
+        center: Offset.zero,
+        radius: _joystickKnobRadius,
+      ))
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.5);
+  }
+
+  Paint _createBackgroundPaint() {
+    return Paint()
+      ..shader = const RadialGradient(
+        colors: [_joystickBgColorInner, _joystickBgColorOuter],
+        stops: [0.0, 1.0],
+      ).createShader(Rect.fromCircle(
+        center: Offset.zero,
+        radius: _joystickBackgroundRadius,
+      ))
+      ..style = PaintingStyle.fill;
+  }
+
+  void updateJoystick() {
+    player.direction = joystick.delta.length2 < _joystickDeadzone
+        ? PlayerDirection.none
+        : joystick.direction.isHorizontal
+            ? joystick.direction == JoystickDirection.left
+                ? PlayerDirection.left
+                : PlayerDirection.right
+            : PlayerDirection.none;
+  }
+extension on JoystickDirection {
+  bool get isHorizontal =>
+      this == JoystickDirection.left || this == JoystickDirection.right;
+}
+*/
