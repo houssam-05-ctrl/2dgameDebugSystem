@@ -6,9 +6,11 @@ import 'package:flutter/foundation.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
 import 'package:pixel_adventure/components/player.dart';
 
+/// Niveau du jeu, chargé depuis un fichier Tiled (.tmx).
 class Level extends World {
   final String levelName;
   final Player player;
+
   Level({required this.levelName, required this.player});
 
   late TiledComponent level;
@@ -16,11 +18,13 @@ class Level extends World {
 
   @override
   FutureOr<void> onLoad() async {
+    // Charge la carte Tiled
     level = await TiledComponent.load(
       '$levelName.tmx',
-      Vector2.all(16),
+      Vector2.all(16), // Taille des tuiles : 16x16 pixels
     );
 
+    // Debug : affiche les couches disponibles
     if (kDebugMode) {
       print('=== DEBUG: Layers in $levelName.tmx ===');
       for (final layer in level.tileMap.map.layers) {
@@ -31,38 +35,34 @@ class Level extends World {
 
     add(level);
 
-    // Try to get the Spawnpoint layer
+    // Cherche le point de spawn du joueur
+    _setupSpawnPoint();
+
+    // Configure les collisions
+    _setupCollisions();
+
+    return super.onLoad();
+  }
+
+  /// Configure le point de spawn du joueur depuis la carte Tiled.
+  void _setupSpawnPoint() {
     final spawnPointLayer = level.tileMap.getLayer<ObjectGroup>('Spawnpoint');
 
     if (spawnPointLayer != null) {
       if (kDebugMode) {
         print(
             'Found Spawnpoint layer with ${spawnPointLayer.objects.length} objects');
-        for (final obj in spawnPointLayer.objects) {
-          print(
-              '  Object: name="${obj.name}", class="${obj.class_}", type="${obj.type}", '
-              'position=(${obj.x}, ${obj.y}), size=(${obj.width}×${obj.height})');
-        }
       }
 
-      // Look for the Player object
+      // Cherche l'objet "Player" dans les points de spawn
       bool playerAdded = false;
       for (final spawnpoint in spawnPointLayer.objects) {
-        if (kDebugMode) {
-          print(
-              'Checking object: ${spawnpoint.name} with class: ${spawnpoint.class_}');
-        }
-
-        // Check multiple possible properties where the class might be stored
+        // Vérifie si cet objet est le joueur
         if (spawnpoint.class_ == 'Player' ||
             spawnpoint.name == 'Player' ||
             spawnpoint.type == 'Player') {
+          // Positionne le joueur au point de spawn
           player.position = Vector2(spawnpoint.x, spawnpoint.y);
-          //  avant d'ajouter le joueur on fait un test :
-          if (kDebugMode) {
-            print(
-                'Player spawn position: (${player.position.x}, ${player.position.y})');
-          }
           add(player);
           playerAdded = true;
 
@@ -70,64 +70,64 @@ class Level extends World {
             print(
                 'Player added at position (${spawnpoint.x}, ${spawnpoint.y})');
           }
-          break; // Found player, break out of loop
+          break;
         }
       }
 
-      final collisionsLayer = level.tileMap.getLayer<ObjectGroup>('Collisions');
-
-      if (collisionsLayer != null) {
-        for (final collision in collisionsLayer.objects) {
-          // we gonna check for the collisions layer in the objects and see fi there is any for our game
-          switch (collision.class_) {
-            case 'Platform':
-              final platform = CollisionBlock(
-                position: Vector2(collision.x, collision.y),
-                size: Vector2(collision.width, collision.height),
-                isPlatform: true,
-              );
-              collisionsBlocks.add(platform); // add finally to teh list
-              add(platform); // daba kaybano( because its a flame feature to add using this fucntion)
-              break;
-            default:
-              final block = CollisionBlock(
-                position: Vector2(collision.x, collision.y),
-                size: Vector2(collision.width, collision.height),
-              );
-              collisionsBlocks.add(block);
-              add(block);
-          }
-        }
-      }
-      player.collisionsBlocks = collisionsBlocks;
-
+      // Si pas de joueur trouvé, utilise une position par défaut
       if (!playerAdded) {
-        if (kDebugMode) {
-          print('Warning: No Player object found in Spawnpoint layer');
-          print('Available objects in Spawnpoint layer:');
-          for (final obj in spawnPointLayer.objects) {
-            print(
-                '  - Name: "${obj.name}", Class: "${obj.class_}", Type: "${obj.type}"');
-          }
-        }
-        // Add player at default position
-        addDefaultPlayer();
+        _addDefaultPlayer();
       }
     } else {
+      // Si pas de couche Spawnpoint, utilise une position par défaut
       if (kDebugMode) {
-        print('Warning: Spawnpoint layer not found. Available layers:');
-        for (final layer in level.tileMap.map.layers) {
-          print('  - ${layer.name} (${layer.runtimeType})');
-        }
+        print('Warning: Spawnpoint layer not found');
       }
-      // Add player at default position
-      addDefaultPlayer();
+      _addDefaultPlayer();
     }
-
-    return super.onLoad();
   }
 
-  void addDefaultPlayer() {
+  /// Configure les blocs de collision depuis la carte Tiled.
+  void _setupCollisions() {
+    final collisionsLayer = level.tileMap.getLayer<ObjectGroup>('Collisions');
+
+    if (collisionsLayer != null) {
+      for (final collision in collisionsLayer.objects) {
+        // Crée un bloc de collision selon son type
+        CollisionBlock block;
+
+        switch (collision.class_) {
+          case 'Platform':
+            // Plateforme traversable par le bas
+            block = CollisionBlock(
+              position: Vector2(collision.x, collision.y),
+              size: Vector2(collision.width, collision.height),
+              isPlatform: true,
+            );
+            break;
+          default:
+            // Bloc solide normal
+            block = CollisionBlock(
+              position: Vector2(collision.x, collision.y),
+              size: Vector2(collision.width, collision.height),
+              isPlatform: false,
+            );
+        }
+
+        // Ajoute le bloc à la liste et au monde
+        collisionsBlocks.add(block);
+        add(block);
+      }
+
+      // Transfère la liste des collisions au joueur
+      player.collisionsBlocks = collisionsBlocks;
+    } else if (kDebugMode) {
+      print('Warning: Collisions layer not found');
+    }
+  }
+
+  /// Ajoute le joueur à une position par défaut.
+  void _addDefaultPlayer() {
     player.position = Vector2(100, 100);
     add(player);
 

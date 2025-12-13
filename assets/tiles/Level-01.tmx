@@ -29,20 +29,14 @@
 </data>
  </layer>
  <objectgroup id="4" name="Collisions">
-  <object id="13" name="Collisions" x="32" y="80" width="560" height="16"/>
   <object id="14" name="Collisions" x="576" y="96" width="16" height="224"/>
   <object id="15" name="Collisions" x="32" y="288" width="560" height="16"/>
   <object id="16" name="Collisions" x="32" y="96" width="16" height="208"/>
   <object id="17" name="Collisions" x="48" y="256" width="112" height="48"/>
-  <object id="19" x="192" y="208" width="48"/>
   <object id="20" name="Collisions" x="272" y="192" width="48" height="16"/>
-  <object id="21" x="352" y="176" width="48"/>
   <object id="22" name="Collisions" x="432" y="256" width="144" height="48"/>
   <object id="23" name="Collisions" x="560" y="224" width="16" height="32"/>
-  <object id="24" x="464" y="240" width="16" height="16"/>
-  <object id="25" x="496" y="240" width="16" height="16"/>
   <object id="27" name="Collisions" x="464" y="240" width="16" height="16"/>
-  <object id="28" x="496" y="240" width="16" height="16"/>
   <object id="29" name="Collisions" x="528" y="240" width="16" height="16"/>
   <object id="30" type="Platform" x="48" y="160" width="48" height="16"/>
   <object id="31" type="Platform" x="48" y="192" width="48" height="16"/>
@@ -51,12 +45,10 @@
   <object id="36" name="Collisions" x="192" y="208" width="48" height="16"/>
   <object id="37" name="Collisions" x="352" y="176" width="48" height="16"/>
   <object id="38" name="Collisions" x="48" y="240" width="16" height="16"/>
-  <object id="39" x="80" y="240" width="16" height="16"/>
-  <object id="40" x="144" y="240" width="16" height="16"/>
   <object id="42" name="Collisions" x="80" y="240" width="16" height="16"/>
   <object id="44" name="Collision" x="144" y="240" width="16" height="16"/>
  </objectgroup>
  <objectgroup id="2" name="Spawnpoint">
-  <object id="5" name="Player" type="Player" x="294.622" y="262.183" width="26.785" height="25.1109"/>
+  <object id="5" name="Player" type="Player" x="288" y="240" width="26.785" height="25.1109"/>
  </objectgroup>
 </map>
