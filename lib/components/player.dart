@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 enum PlayerState { idle, running }
 
 class Player extends SpriteAnimationGroupComponent<PlayerState>
-    with HasGameReference<PixelAdventure>, KeyboardHandler {
+    with HasGameReference<PixelAdventure> {
   String character;
   Player({super.position, this.character = 'Mask Dude'});
 
@@ -44,31 +44,6 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     _checkHorizontalCollisions();
     _updatePlayerState();
     super.update(dt);
-  }
-
-  @override
-  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    // Mouvement horizontal
-    horizontalMovement = 0;
-    final isLeftKeyPressed =
-        keysPressed.contains(LogicalKeyboardKey.arrowLeft) ||
-            keysPressed.contains(LogicalKeyboardKey.keyA);
-    final isRightKeyPressed =
-        keysPressed.contains(LogicalKeyboardKey.arrowRight) ||
-            keysPressed.contains(LogicalKeyboardKey.keyD);
-
-    horizontalMovement += isLeftKeyPressed ? -1 : 0;
-    horizontalMovement += isRightKeyPressed ? 1 : 0;
-
-    // jump only when the key is pressed and we are on the floor :
-    if (event is KeyDownEvent &&
-        event.logicalKey == LogicalKeyboardKey.space &&
-        isOnGround) {
-      velocity.y = -_jumpForce;
-      isOnGround = false;
-    }
-
-    return true;
   }
 
   Future<void> _loadAllAnimations() async {
@@ -170,4 +145,6 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
       isOnGround = false;
     }
   }
+
+  double get jumpForce => _jumpForce;
 }

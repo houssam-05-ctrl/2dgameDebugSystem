@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pixel_adventure/components/player.dart';
 import 'package:pixel_adventure/components/level.dart';
@@ -55,22 +56,34 @@ class PixelAdventure extends FlameGame
   }
 
   void updateJoystick() {
-    switch (joystick.direction) {
-      case JoystickDirection.left:
-        player.horizontalMovement = -1;
-        break;
-      case JoystickDirection.right:
-        player.horizontalMovement = 1;
-        break;
-      case JoystickDirection.up:
-      case JoystickDirection.down:
-      case JoystickDirection.upLeft:
-      case JoystickDirection.upRight:
-      case JoystickDirection.downLeft:
-      case JoystickDirection.downRight:
-      case JoystickDirection.idle:
-        player.horizontalMovement = 0;
-        break;
+    if (kDebugMode) {
+      print('=== JOYSTICK UPDATE ===');
+      print('Direction: ${joystick.direction}');
+      print('Delta: ${joystick.delta}');
+      print('Relative Delta X: ${joystick.relativeDelta.x}');
+    }
+
+    // Utilise la valeur X du joystick directement (plus précis)
+    double joystickValue = joystick.relativeDelta.x;
+
+    if (joystickValue.abs() > 0.1) {
+      // Joystick déplacé
+      player.horizontalMovement = joystickValue;
+
+      if (kDebugMode) {
+        print('Joystick active! Value: $joystickValue');
+      }
+
+      // Saut si on tire vers le haut assez fort
+      if (joystick.relativeDelta.y < -0.7 && player.isOnGround) {
+        player.velocity.y = -player.jumpForce;
+        player.isOnGround = false;
+        if (kDebugMode) print('JUMP from joystick!');
+      }
+    } else {
+      // Joystick au centre
+      player.horizontalMovement = 0;
+      if (kDebugMode) print('Joystick idle');
     }
   }
 }
