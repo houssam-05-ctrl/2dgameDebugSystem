@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flame/components.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
 import 'package:pixel_adventure/components/utils.dart';
 import 'package:pixel_adventure/pixel_adventure.dart';
@@ -14,31 +15,40 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
 
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation runAnimation;
+
+  // Constantes
   final double stepTime = 0.05;
+  final double _gravity = 500; // AUGMENTÉ
+  final double _jumpForce = 460;
+  final double _terminalVelocity = 300;
+
   List<CollisionBlock> collisionsBlocks = [];
   double horizontalMovement = 0;
-  double moveSpeed = 100; // pixels per second
+  double moveSpeed = 100;
   Vector2 velocity = Vector2.zero();
+  bool isOnGround = false;
 
   @override
   FutureOr<void> onLoad() async {
     await _loadAllAnimations();
     debugMode = true;
-    // Set the current animation state to idle initially
     current = PlayerState.idle;
     return super.onLoad();
   }
 
   @override
   void update(double dt) {
-    _updatePlayerState();
-    _checkHorizontalCollisions();
     _updatePlayerMovement(dt);
+    _applyGravity(dt);
+    _checkVerticalCollisions();
+    _checkHorizontalCollisions();
+    _updatePlayerState();
     super.update(dt);
   }
 
   @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    // Mouvement horizontal
     horizontalMovement = 0;
     final isLeftKeyPressed =
         keysPressed.contains(LogicalKeyboardKey.arrowLeft) ||
@@ -49,7 +59,15 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
 
     horizontalMovement += isLeftKeyPressed ? -1 : 0;
     horizontalMovement += isRightKeyPressed ? 1 : 0;
-    // We are handling the key event, so return true.
+
+    // jump only when the key is pressed and we are on the floor :
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.space &&
+        isOnGround) {
+      velocity.y = -_jumpForce;
+      isOnGround = false;
+    }
+
     return true;
   }
 
@@ -65,9 +83,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
 
   SpriteAnimation _spriteAnimation(String state, int amount) {
     return SpriteAnimation.fromFrameData(
-      game.images.fromCache(
-        'Main Characters/$character/$state (32x32).png',
-      ),
+      game.images.fromCache('Main Characters/$character/$state (32x32).png'),
       SpriteAnimationData.sequenced(
         amount: amount,
         stepTime: stepTime,
@@ -79,13 +95,19 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
   void _updatePlayerState() {
     PlayerState playerState = PlayerState.idle;
 
+    // Flip l'orientation
     if (velocity.x < 0 && scale.x > 0) {
       flipHorizontallyAroundCenter();
     } else if (velocity.x > 0 && scale.x < 0) {
       flipHorizontallyAroundCenter();
     }
-    // to check if the player is moving and set running
-    if (velocity.x > 0 || velocity.x < 0) playerState = PlayerState.running;
+
+    // Définit l'état (idle ou running)
+    if (velocity.x.abs() > 0.1) {
+      // Utilise abs() pour éviter les petites valeurs
+      playerState = PlayerState.running;
+    }
+
     current = playerState;
   }
 
@@ -96,12 +118,56 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
 
   void _checkHorizontalCollisions() {
     for (final block in collisionsBlocks) {
-      if (!block.isPlatform) {
-        if (checkCollision(this, block)) {
-          // a voir
-          if (velocity.x > 0) {}
+      if (!block.isPlatform && checkCollision(this, block)) {
+        if (velocity.x > 0) {
+          // Vers la droite
+          velocity.x = 0;
+          position.x = block.position.x - size.x;
+          break;
+        }
+        if (velocity.x < 0) {
+          // Vers la gauche
+          velocity.x = 0;
+          position.x = block.position.x + block.size.x;
+          break;
         }
       }
+    }
+  }
+
+  void _checkVerticalCollisions() {
+    isOnGround = false; // Réinitialise
+
+    for (final block in collisionsBlocks) {
+      if (checkCollision(this, block)) {
+        if (velocity.y > 0) {
+          // Tombe sur le bloc
+          velocity.y = 0;
+          position.y =
+              block.position.y - size.y - 1.0; // -1 pour éviter oscillation
+          isOnGround = true;
+          break;
+        }
+        if (velocity.y < 0) {
+          // Saute contre le plafond
+          velocity.y = 0;
+          position.y = block.position.y +
+              block.size.y +
+              1.0; // +1 pour éviter oscillation
+          break;
+        }
+      }
+    }
+  }
+
+  void _applyGravity(double dt) {
+    velocity.y += _gravity;
+    velocity.y = velocity.y.clamp(-_jumpForce, _terminalVelocity);
+    position.y += velocity.y * dt;
+
+    // Si on tombe (vitesse positive), on n'est plus au sol
+    if (velocity.y > 0) {
+      isOnGround = false;
     }
   }
 }

@@ -58,6 +58,11 @@ class Level extends World {
             spawnpoint.name == 'Player' ||
             spawnpoint.type == 'Player') {
           player.position = Vector2(spawnpoint.x, spawnpoint.y);
+          //  avant d'ajouter le joueur on fait un test :
+          if (kDebugMode) {
+            print(
+                'Player spawn position: (${player.position.x}, ${player.position.y})');
+          }
           add(player);
           playerAdded = true;
 
