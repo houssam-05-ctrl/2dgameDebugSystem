@@ -2,27 +2,25 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
-/// Composant qui représente un bloc de collision invisible.
-/// En mode debug, les collisions sont visibles avec des couleurs différentes.
+//we define les blocs de collisions importe depuis notre tiled
 class CollisionBlock extends PositionComponent {
-  /// Si vrai, ce bloc est une plateforme que le joueur peut traverser par le bas.
+  /// si c est une platforme il peut traverser dessus ( pas une collision )
   bool isPlatform;
 
-  /// Couleur pour le mode debug
+  /// choix de couleur
   final Color _debugPlatformColor = Colors.green.withOpacity(0.5);
   final Color _debugSolidColor = Colors.red.withOpacity(0.5);
 
   /// Crée un nouveau bloc de collision.
   ///
-  /// [position]: Position du bloc dans le monde.
-  /// [size]: Dimensions du bloc.
-  /// [isPlatform]: Si le bloc est une plateforme traversable.
+  /// [position]: position du bloc in our world
+  /// [size]: dimen du bloc
   CollisionBlock({
     super.position,
     super.size,
     this.isPlatform = false,
   }) {
-    // Active le mode debug si on est en mode développement
+    // active le mode debug si on est en mode développement
     debugMode = kDebugMode;
   }
 
@@ -30,14 +28,14 @@ class CollisionBlock extends PositionComponent {
   void render(Canvas canvas) {
     super.render(canvas);
 
-    // Dessine le rectangle de collision en mode debug
+    // dessine le rectangle de collision en mode debug
     if (debugMode) {
       final paint = Paint()
         ..color = isPlatform ? _debugPlatformColor : _debugSolidColor
         ..style = PaintingStyle.fill
         ..strokeWidth = 2.0;
 
-      // Dessine le rectangle rempli
+      // dessine le rectangle rempli
       canvas.drawRect(size.toRect(), paint);
 
       // Dessine le contour
@@ -48,9 +46,9 @@ class CollisionBlock extends PositionComponent {
 
       canvas.drawRect(size.toRect(), borderPaint);
 
-      // Ajoute un texte pour identifier le type
+      // ajoute un texte pour identifier le type
       if (size.x > 30 && size.y > 30) {
-        // Seulement si assez grand
+        // seul si c grand
         final textPainter = TextPainter(
           text: TextSpan(
             text: isPlatform ? 'Platform' : 'Solid',

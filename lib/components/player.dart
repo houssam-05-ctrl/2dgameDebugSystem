@@ -16,9 +16,9 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation runAnimation;
 
-  // Constantes
+// on definit les constantes quon va utiliser ici
   final double stepTime = 0.05;
-  final double _gravity = 500; // AUGMENTÉ
+  final double _gravity = 500;
   final double _jumpForce = 460;
   final double _terminalVelocity = 300;
 
@@ -56,6 +56,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     };
   }
 
+// animaion du joueur
   SpriteAnimation _spriteAnimation(String state, int amount) {
     return SpriteAnimation.fromFrameData(
       game.images.fromCache('Main Characters/$character/$state (32x32).png'),
@@ -70,16 +71,16 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
   void _updatePlayerState() {
     PlayerState playerState = PlayerState.idle;
 
-    // Flip l'orientation
+// Flip l'orientation
     if (velocity.x < 0 && scale.x > 0) {
       flipHorizontallyAroundCenter();
     } else if (velocity.x > 0 && scale.x < 0) {
       flipHorizontallyAroundCenter();
     }
 
-    // Définit l'état (idle ou running)
+// Définit l'état (idle ou running)
     if (velocity.x.abs() > 0.1) {
-      // Utilise abs() pour éviter les petites valeurs
+// Utilise abs() pour éviter les petites valeurs
       playerState = PlayerState.running;
     }
 
@@ -95,13 +96,13 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     for (final block in collisionsBlocks) {
       if (!block.isPlatform && checkCollision(this, block)) {
         if (velocity.x > 0) {
-          // Vers la droite
+// Vers la droite
           velocity.x = 0;
           position.x = block.position.x - size.x;
           break;
         }
         if (velocity.x < 0) {
-          // Vers la gauche
+// Vers la gauche
           velocity.x = 0;
           position.x = block.position.x + block.size.x;
           break;
@@ -116,7 +117,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     for (final block in collisionsBlocks) {
       if (checkCollision(this, block)) {
         if (velocity.y > 0) {
-          // Tombe sur le bloc
+// Tombe sur le bloc
           velocity.y = 0;
           position.y =
               block.position.y - size.y - 1.0; // -1 pour éviter oscillation
@@ -124,7 +125,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
           break;
         }
         if (velocity.y < 0) {
-          // Saute contre le plafond
+// Saute contre le plafond
           velocity.y = 0;
           position.y = block.position.y +
               block.size.y +
@@ -140,7 +141,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     velocity.y = velocity.y.clamp(-_jumpForce, _terminalVelocity);
     position.y += velocity.y * dt;
 
-    // Si on tombe (vitesse positive), on n'est plus au sol
+// Si on tombe (vitesse positive), on n'est plus au sol
     if (velocity.y > 0) {
       isOnGround = false;
     }

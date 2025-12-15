@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
 import 'package:pixel_adventure/components/player.dart';
 
-/// Niveau du jeu, chargé depuis un fichier Tiled (.tmx).
 class Level extends World {
   final String levelName;
   final Player player;
@@ -21,7 +20,7 @@ class Level extends World {
     // Charge la carte Tiled
     level = await TiledComponent.load(
       '$levelName.tmx',
-      Vector2.all(16), // Taille des tuiles : 16x16 pixels
+      Vector2.all(16),
     );
 
     // Debug : affiche les couches disponibles
@@ -35,16 +34,16 @@ class Level extends World {
 
     add(level);
 
-    // Cherche le point de spawn du joueur
+    // appel de fonction
     _setupSpawnPoint();
 
-    // Configure les collisions
+    // appel de fonction de config de collisions
     _setupCollisions();
 
     return super.onLoad();
   }
 
-  /// Configure le point de spawn du joueur depuis la carte Tiled.
+  /// configure le spawn point
   void _setupSpawnPoint() {
     final spawnPointLayer = level.tileMap.getLayer<ObjectGroup>('Spawnpoint');
 
