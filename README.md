@@ -53,7 +53,7 @@ lib/
 
 ````bash
 # Clone the repository
-git clone https://github.com/houssam-05-ctrl/pixel_adventure
+git clone https://github.com/houssam-05-ctrl/2dgameDebugSystem
 
 # Navigate to project
 cd pixel_adventure
